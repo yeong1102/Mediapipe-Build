@@ -13,8 +13,8 @@
 # limitations under the License.
 
 load(
-    "//mediapipe/framework/tool:mediapipe_graph.bzl",
-    "mediapipe_binary_graph",
+"//mediapipe/framework/tool:mediapipe_graph.bzl",
+"mediapipe_binary_graph",
 )
 
 licenses(["notice"])
@@ -22,12 +22,16 @@ licenses(["notice"])
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "selfie_segmentation_gpu_deps",
-    deps = [
-        "//mediapipe/calculators/core:flow_limiter_calculator",
-        "//mediapipe/calculators/image:recolor_calculator",
-        "//mediapipe/modules/selfie_segmentation:selfie_segmentation_gpu",
-    ],
+name = "selfie_segmentation_gpu_deps",
+deps = [
+"//mediapipe/calculators/core:flow_limiter_calculator",
+"//mediapipe/calculators/image:recolor_calculator",
+"//mediapipe/gpu:image_frame_to_gpu_buffer_calculator",
+"//mediapipe/calculators/core:packet_cloner_calculator",
+"//mediapipe/calculators/image:image_transformation_calculator",
+"//mediapipe/calculators/image:mask_overlay_calculator",
+"//mediapipe/modules/selfie_segmentation:selfie_segmentation_gpu",
+],
 )
 
 mediapipe_binary_graph(
@@ -38,12 +42,15 @@ mediapipe_binary_graph(
 )
 
 cc_library(
-    name = "selfie_segmentation_cpu_deps",
-    deps = [
-        "//mediapipe/calculators/core:flow_limiter_calculator",
-        "//mediapipe/calculators/image:recolor_calculator",
-        "//mediapipe/modules/selfie_segmentation:selfie_segmentation_cpu",
-    ],
+name = "selfie_segmentation_cpu_deps",
+deps = [
+"//mediapipe/calculators/core:flow_limiter_calculator",
+"//mediapipe/gpu:image_frame_to_gpu_buffer_calculator",
+"//mediapipe/calculators/core:packet_cloner_calculator",
+"//mediapipe/calculators/image:image_transformation_calculator",
+"//mediapipe/calculators/image:mask_overlay_calculator",
+"//mediapipe/modules/selfie_segmentation:selfie_segmentation_cpu",
+],
 )
 
 mediapipe_binary_graph(
