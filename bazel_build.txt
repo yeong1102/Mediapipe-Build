@@ -11,6 +11,7 @@ bazel build -c opt --strip=ALWAYS \
     --copt=-fomit-frame-pointer \
     --copt=-DABSL_MIN_LOG_LEVEL=2 \
     --linkopt=-Wl,--gc-sections,--strip-all \
+    --define=xnn_enable_arm_i8mm=false \
     //mediapipe/examples/android/src/java/com/google/mediapipe/apps/aar_example:mediapipe_selfie.aar
 
 
