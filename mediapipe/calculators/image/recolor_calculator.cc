@@ -379,6 +379,7 @@ void RecolorCalculator::GlRender() {
   // program
   glUseProgram(program_);
   glUniform3f(glGetUniformLocation(program_, "recolor"), color_[0] / 255.0,color_[1] / 255.0, color_[2] / 255.0);
+  color_.clear();
 
   // vertex storage
   GLuint vbo[2];
