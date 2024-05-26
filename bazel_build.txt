@@ -16,6 +16,8 @@ bazel build -c opt --strip=ALWAYS \
 
 
 bazel build -c opt mediapipe/graphs/selfie_segmentation:selfie_segmentation_gpu_binary_graph
+bazel build -c opt mediapipe/graphs/selfie_segmentation:selfie_segmentation_gpu_image_to_color_binary_graph
+
 bazel build -c opt mediapipe/graphs/face_effect/data:axis
 
 
