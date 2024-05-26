@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cstdint>
 #include <vector>
 
 #include "mediapipe/calculators/image/recolor_calculator.pb.h"
@@ -37,6 +38,7 @@ constexpr char kImageFrameTag[] = "IMAGE";
 constexpr char kMaskCpuTag[] = "MASK";
 constexpr char kGpuBufferTag[] = "IMAGE_GPU";
 constexpr char kMaskGpuTag[] = "MASK_GPU";
+constexpr char kRGBTag[] = "RGB_ARRAY";
 
 inline cv::Vec3b Blend(const cv::Vec3b& color1, const cv::Vec3b& color2,
                        float weight, int invert_mask,
@@ -113,7 +115,7 @@ class RecolorCalculator : public CalculatorBase {
   void GlRender();
 
   bool initialized_ = false;
-  std::vector<uint8> color_;
+  std::vector<uint8_t> color_;
   mediapipe::RecolorCalculatorOptions::MaskChannel mask_channel_;
 
   bool use_gpu_ = false;
@@ -132,6 +134,10 @@ absl::Status RecolorCalculator::GetContract(CalculatorContract* cc) {
   RET_CHECK(!cc->Outputs().GetTags().empty());
 
   bool use_gpu = false;
+
+  if (cc->Inputs().HasTag(kRGBTag)) {
+    cc->Inputs().Tag(kRGBTag).Set<std::array<int,3>>();
+  }
 
 #if !MEDIAPIPE_DISABLE_GPU
   if (cc->Inputs().HasTag(kGpuBufferTag)) {
@@ -317,6 +323,13 @@ absl::Status RecolorCalculator::RenderGpu(CalculatorContext* cc) {
   auto dst_tex =
       gpu_helper_.CreateDestinationTexture(img_tex.width(), img_tex.height());
 
+  const Packet& rgb_packet = cc->Inputs().Tag(kRGBTag).Value();
+  const auto& rgb_buffer = rgb_packet.Get<std::array<int,3>>();
+
+  color_.push_back(rgb_buffer[0]);
+  color_.push_back(rgb_buffer[1]);
+  color_.push_back(rgb_buffer[2]);
+
   // Run recolor shader on GPU.
   {
     gpu_helper_.BindFramebuffer(dst_tex);
@@ -365,6 +378,7 @@ void RecolorCalculator::GlRender() {
 
   // program
   glUseProgram(program_);
+  glUniform3f(glGetUniformLocation(program_, "recolor"), color_[0] / 255.0,color_[1] / 255.0, color_[2] / 255.0);
 
   // vertex storage
   GLuint vbo[2];
@@ -407,9 +421,9 @@ absl::Status RecolorCalculator::LoadOptions(CalculatorContext* cc) {
 
   if (!options.has_color()) RET_CHECK_FAIL() << "Missing color option.";
 
-  color_.push_back(options.color().r());
-  color_.push_back(options.color().g());
-  color_.push_back(options.color().b());
+  //color_.push_back(options.color().r());
+  //color_.push_back(options.color().g());
+  //color_.push_back(options.color().b());
 
   invert_mask_ = options.invert_mask();
   adjust_with_luminance_ = options.adjust_with_luminance();
@@ -492,8 +506,7 @@ absl::Status RecolorCalculator::InitGpu(CalculatorContext* cc) {
   glUseProgram(program_);
   glUniform1i(glGetUniformLocation(program_, "frame"), 1);
   glUniform1i(glGetUniformLocation(program_, "mask"), 2);
-  glUniform3f(glGetUniformLocation(program_, "recolor"), color_[0] / 255.0,
-              color_[1] / 255.0, color_[2] / 255.0);
+  //glUniform3f(glGetUniformLocation(program_, "recolor"), color_[0] / 255.0,color_[1] / 255.0, color_[2] / 255.0);
   glUniform1f(glGetUniformLocation(program_, "invert_mask"),
               invert_mask_ ? 1.0f : 0.0f);
   glUniform1f(glGetUniformLocation(program_, "adjust_with_luminance"),
