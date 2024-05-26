@@ -46,7 +46,7 @@ mediapipe_binary_graph(
 )
 
 cc_library(
-    name = "selfie_segmentation_gpu_deps",
+    name = "selfie_segmentation_gpu_image_to_color_deps",
     deps = [
         "//mediapipe/calculators/core:flow_limiter_calculator",
         "//mediapipe/calculators/image:recolor_calculator",
@@ -55,8 +55,8 @@ cc_library(
 )
 
 mediapipe_binary_graph(
-    name = "selfie_segmentation_gpu_binary_graph",
-    graph = "selfie_segmentation_gpu.pbtxt",
+    name = "selfie_segmentation_gpu_image_to_color_binary_graph",
+    graph = "selfie_segmentation_gpu_image_to_color.pbtxt",
     output_name = "selfie_segmentation_gpu_image_to_color.binarypb",
-    deps = [":selfie_segmentation_gpu_deps"],
+    deps = [":selfie_segmentation_gpu_image_to_color_deps"],
 )
