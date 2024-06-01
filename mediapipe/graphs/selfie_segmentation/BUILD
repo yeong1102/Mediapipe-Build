@@ -35,6 +35,7 @@ cc_library(
         "//mediapipe/gpu:image_frame_to_gpu_buffer_calculator",
         "//mediapipe/gpu:gpu_buffer_to_image_frame_calculator",
         "//mediapipe/modules/selfie_segmentation:selfie_segmentation_gpu_image",
+        "//mediapipe/modules/face_landmark:face_landmark_front_gpu_image",
     ],
 )
 
