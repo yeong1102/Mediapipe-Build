@@ -17,11 +17,11 @@ bazel build -c opt --strip=ALWAYS \
 
 bazel build -c opt mediapipe/graphs/selfie_segmentation:selfie_segmentation_gpu_binary_graph
 bazel build -c opt mediapipe/graphs/selfie_segmentation:selfie_segmentation_gpu_image_to_color_binary_graph
-
 bazel build -c opt mediapipe/graphs/face_effect/data:axis
-
-
 bazel build -c opt mediapipe/modules/face_geometry/data:geometry_pipeline_metadata_landmarks
+
+bazel build -c opt --define MEDIAPIPE_DISABLE_GPU=1 mediapipe/modules/face_landmark:face_landmark_front_gpu_image
+bazel build -c opt --define MEDIAPIPE_DISABLE_GPU=1 mediapipe/graphs/face_mesh:mobile_calculators
 
 
 cp bazel-bin/mediapipe/graphs/selfie_segmentation/selfie_segmentation_gpu.binarypb ~/AndroidStudioProjects/Mediapipe-And/one/basic/src/main/assets/
